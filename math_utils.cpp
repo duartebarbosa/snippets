@@ -41,7 +41,7 @@ unsigned long int prime_gen(int start){
 bool isprime(unsigned long n){
  
 	if(n <= 3){
-		if(n == 1 || n == 0)
+		if(n <= 1)
 			return false;
 		return true;
 	}
