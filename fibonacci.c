@@ -4,6 +4,7 @@
 int fib_iter(n){	//something wrong
 	int i;
 	int tmp[2];
+	int aux = 1;
 	tmp[0] = 0;
 	tmp[1] = 1;
 
@@ -11,7 +12,8 @@ int fib_iter(n){	//something wrong
 		return tmp[n];
 
 	for(i = 2; i <= n; i++){
-		tmp[0] += tmp[1];
+		tmp[0] += aux;
+		aux = tmp[1];
 		tmp[1] = tmp[0];
 	}
 
@@ -25,7 +27,7 @@ int fib_recur(n){
 }
 
 int main(){
-	int i = fib_iter(10);
+	int i = fib_iter(12);
 	printf("fib: %d\n", i);
 	return 0;
 }

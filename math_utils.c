@@ -1,5 +1,6 @@
 #include "stdio.h"
 
+#define PI 3.1415926535898
 /* Useful defines in Math applications */
 #define odd_even(x) ((x & 1) ?  1 : 0)			/* return 1 in odd number, 0 in even number. */
 #define even(x) ((x & 1) ? 0 : 1 )			/* find if a number is even (return 1 - true). */
