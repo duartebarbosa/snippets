@@ -18,6 +18,10 @@
 #define compexch(A, B) if (less (B, A)) exch (A, B)	/* compare two items and change them if necessary */
 
 
+inline void swap(int &x, int &y){
+        x ^= y ^= x ^= y;
+}
+
 /* A prime number generator. The start argument is a seed from which the function must return a prime (by excess). */
 unsigned long int prime_gen(int start){
 
