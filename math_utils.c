@@ -1,4 +1,6 @@
-#include "stdio.h"
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
 
 #define PI 3.1415926535898
 /* Useful defines in Math applications */
@@ -17,10 +19,11 @@
 #define exch (A, B) { Item t = A; A = B; B = t; } 	/* you need to define the "item" type */
 #define compexch(A, B) if (less (B, A)) exch (A, B)	/* compare two items and change them if necessary */
 
-
+/*
 inline void swap(int &x, int &y){
         x ^= y ^= x ^= y;
 }
+*/
 
 /* A prime number generator. The start argument is a seed from which the function must return a prime (by excess). */
 unsigned long int prime_gen(int start){
@@ -63,9 +66,54 @@ int isprime(unsigned long n){
 	return 1;
 }
 
-
-int isPowerOf2(unsigned int n){
-
+inline int isPowerOf2(unsigned int n){
     return n == 1 || (n & (n-1)) == 0;
 }
 
+/* taken from http://cartera.me/2012/01/10/primality-testing-and-factorization-in-c/ with slight changes*/
+void fillPrimeSieve(char *sieve, long int length) {
+	for (long int i = 2; i <= length ; i++) {
+		if (!sieve[i]) {
+			for (long int j = 2 * i; j < length; j += i)
+				sieve[j] = 1;
+		}
+	}
+}
+
+void factorizeWithTrialDivisionAndSieve(long int n, char *sieve, long max) {
+	for (long int i = 2; i <= max; i++) {
+		if (sieve[i]) continue;
+		long int prime = i;
+		if (prime * prime == n) {
+			printf("%ld\n%ld\n", prime, prime);
+			break;
+		}
+		if (n % prime == 0) {
+			printf("%ld\n", prime);
+			long int otherFactor = n/prime;
+			if (isprime(otherFactor))
+				printf("%ld\n", otherFactor);
+			else
+				factorizeWithTrialDivisionAndSieve(otherFactor, sieve, floor(sqrt(otherFactor)));
+			break;
+		}
+	}
+}
+
+void factor(unsigned long n) {
+	if (isprime(n)) {
+		printf("%ld is prime.\n", n);
+		return;
+	}
+	long int max = floor(sqrt(n));
+	char *sieve = calloc(max, 1);
+	fillPrimeSieve(sieve, max);
+	factorizeWithTrialDivisionAndSieve(n, sieve, max);
+	free(sieve);
+}
+
+
+int main(){
+	factor(2147483642222329387);
+	return 0;
+}

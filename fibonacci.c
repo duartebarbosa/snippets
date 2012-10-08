@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+/* Fibonacci Iterative implementation */
 int fib_iter(n){
 	int i = 2;
 	int aux = 1;
@@ -19,12 +20,7 @@ int fib_iter(n){
 	return tmp[0];
 }
 
+/* Fibonacci Recursive implementation */
 int fib_recur(n){
 	return (n < 2)? n : fib_recur(n-1) + fib_recur(n-2);
 }
-
-int main(){
-	printf("fib: %d\n", fib_iter(120));
-	return 0;
-}
-
