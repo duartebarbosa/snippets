@@ -4,13 +4,13 @@
 
 #define PI 3.1415926535898
 /* Useful defines in Math applications */
-#define odd_even(x) ((x & 1) ?  1 : 0)			/* return 1 in odd number, 0 in even number. */
+#define odd_even(x) ((x) & 1)				/* return 1 in odd number, 0 in even number. */
 #define even(x) ((x & 1) ? 0 : 1 )			/* find if a number is even (return 1 - true). */
 #define evener(x) ((x & 1) ? (x = (x + 1)) : (x))	/* even a number. */
 #define odd(x) ((x & 1) ? 1 : 0 )			/* find if a number is odd (return 1 - true). */
 #define odder(x) ((x & 1) ? (x) : (x = (x + 1)))	/* odd a number. */
-#define MAX(a, b) ((a) < (b) ? (b) : (a))		/* find the maximum a number. */
-#define MIN(a, b) ((a) > (b) ? (b) : (a))		/* find the minimum a number. */
+#define MAX(a, b) ((a) < (b) ? (b) : (a))		/* find the maximum between two numbers. */
+#define MIN(a, b) ((a) > (b) ? (b) : (a))		/* find the minimum between two numbers. */
 #define SWAP(a, b)  {a ^= b; b ^= a; a ^= b;}		/* swap two numbers */
 
 /* Useful defines in Sorting algorithms */
@@ -112,8 +112,12 @@ void factor(unsigned long n) {
 	free(sieve);
 }
 
-
-int main(){
-	factor(2147483642222329387);
-	return 0;
+unsigned long factorial(unsigned long n) {
+	unsigned long i = n - 1;
+	while(i != 1){
+		n *= i;
+		i--;
+	}
+	return n;
 }
+
