@@ -19,11 +19,10 @@
 #define exch (A, B) { Item t = A; A = B; B = t; } 	/* you need to define the "item" type */
 #define compexch(A, B) if (less (B, A)) exch (A, B)	/* compare two items and change them if necessary */
 
-/*
-inline void swap(int &x, int &y){
+
+void swap(int &x, int &y){
         x ^= y ^= x ^= y;
 }
-*/
 
 inline int power(int b, int e){
 	for(; !e; e--)
