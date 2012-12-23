@@ -25,10 +25,27 @@ int length(){
 	current = head;
 
 	while(current != NULL){
-		current = current->Next;
+		current = current->next;
 		count++;
 	}
 	return(count);*/
+}
+
+void delete(node_t node){
+	if(current == info.head){
+		info.head = current->next;
+		info.head->previous = NULL;
+	}
+	else if(current == info.tail){
+		info.tail = current->previous;
+		info.tail->next = NULL
+	}
+	else{
+		current->next->previous = current->previous;
+		current->previous = current->next;
+	}
+	info.size--;
+	free(current);
 }
 
 // Deleting a node from List depending upon the data in the node.
@@ -37,168 +54,90 @@ int deleteElement(node_t node) {
 
 	node_t current = info.head;
 
-	for(; current != NULL; current = current->next){
+	for(; current != NULL; current = current->next)
 		if(current == node){
-			if(current == info.head){
-				info.head = current->next;
-				info.head->previous = NULL;
-			}
-			else if(current == info.tail){
-				info.tail = current->previous;
-				info.tail->next = NULL
-			}
-			else{
-				current->next->previous = current->previous;
-				current->previous = current->next;
-			}
-			info.size--;
-			free(current);
+			delete(current);
 			return 0;
 		}
-	}
-	return 1;
-}
 
-int deleteElement(int num){
-	node_t previous, current = info.head;
-
-	while(current != NULL){
-		 if(current->Data == num){
-				if(current==head){
-					 head=current->Next;
-					 free(current);
-					 return 0;
-				}
-				else{
-					 previous->Next=current->Next;
-					 free(current);
-					 return 0;
-				}
-		 }
-		 else{
-				previous=current;
-				current=current->Next;
-		 }
-	}
-
-	printf("\nElement %d is not found in the List", num);
 	return 1;
 }
 
 // Deleting a node from List depending upon the location in the list.
 
-int delNodeLoc(int loc){
-	struct Node *previous, *current;
-	int i;
+int deleteElementAt(int location){
+	node_t current = info.head;
 
-	current=head;
-
-	if(loc > (length()) || loc <= 0){
-			printf("\nDeletion of Node at given location is not possible\n ");
-	}
+	if(location < 0 || location > info.size)
+		printf("[list] delete : invalid element location\n");
 	else {
-			// If the location is starting of the list
-			if (loc == 1){
-					head=current->Next;
-					free(current);
-					return 0;
-			}
-			else{
-					for(i=1;i<loc;i++){
-							previous=current;
-							current=current->Next;
-					}
-
-					previous->Next=current->Next;
-					free(current);
-			}
+		for(; location > 0, location--)
+			current = current->next;
+		delete(current);
+		return 0;
 	}
 	return 1;
 }
 
-//Adding a Node at the end of the list
+int addElementStart(void *data){
+	node_t aux = malloc(sizeof(struct Node));
+	aux->data = data;
+	aux->previous = NULL;
 
-void addEnd(int num){
-	struct Node *temp1, *temp2;
+	if(info.head == NULL)
+		aux->next = NULL;
+	else
+		aux->next = info.head;
 
-	temp1=(struct Node *)malloc(sizeof(struct Node));
-	temp1->Data=num;
-
-	// Copying the head location into another node.
-	temp2=head;
-
-	if(head == NULL){
-		 // If List is empty we create First Node.
-		 head=temp1;
-		 head->Next=NULL;
-	}
-	else{
-		 // Traverse down to end of the list.
-		 while(temp2->Next != NULL)
-		 temp2=temp2->Next;
-
-		 // Append at the end of the list.
-		 temp1->Next=NULL;
-		 temp2->Next=temp1;
-	}
+	info.head = aux;
+	return 0;
 }
 
-// Adding a Node at the Beginning of the List
+int addElementEnd(void *data){
+	node_t tmp = malloc(sizeof(struct Node));
+	tmp->data = data;
+	tmp->after = NULL;
 
-void addBeg(int num){
-	struct Node *temp;
+	if(info.tail == NULL)
+		aux->previous = NULL;
+	else
+		aux->previous = info.tail;
 
-	temp=(struct Node *)malloc(sizeof(struct Node));
-	temp->Data = num;
-
-	if (head == NULL){
-		 //List is Empty
-		 head=temp;
-		 head->Next=NULL;
-	}
-	else {
-		 temp->Next=head;
-		 head=temp;
-	}
+	info.tail = tmp;
+	return 0;
 }
 
-// Adding a new Node at specified position
 
-void addAt(int num, int loc){
+void addElementAt(void *data, int location){
 	int i;
-	struct Node *temp, *previous, *current;
+	struct Node *temp, *previous, *current = head;
 
-	current=head;
-
-	if(loc > (length()+1) || loc <= 0){
-		 printf("\nInsertion at given location is not possible\n ");
-	}
+	if(location < 0 || location > info.size + 1)
+		printf("[list] insertion : invalid element location\n");
 	else{
-			// If the location is starting of the list
-			if (loc == 1){
-					addBeg(num);
+		if (!location)
+			addElementStart(data);
+		else if(location == info.size + 1)
+			addElementEnd(data);
+		else{
+			for(i=1;i<loc;i++){
+					previous=current;
+					current=current->next;
 			}
-			else{
-					for(i=1;i<loc;i++){
-							previous=current;
-							current=current->Next;
-					}
 
-					temp=(struct Node *)malloc(sizeof(struct Node));
-					temp->Data=num;
+			temp=(struct Node *)malloc(sizeof(struct Node));
+			temp->Data=num;
 
-					previous->Next=temp;
-					temp->Next=current;
-			}
+			previous->next=temp;
+			temp->next=current;
+		}
 	}
 }
 
 // Displaying list contents
 
 void display(){
-	struct Node *current;
-
-	current=head;
+	struct Node *current=head;
 
 	if(current==NULL){
 		 printf("\nList is Empty");
@@ -209,7 +148,7 @@ void display(){
 			while(current!=NULL)
 			{
 					printf(" -> %d ",current->Data);
-					current=current->Next;
+					current=current->next;
 			}
 			printf("\n");
 	}
@@ -227,8 +166,8 @@ void reverse(){
 		 temp=previous;
 		 previous=current;
 
-		 current=current->Next;
-		 previous->Next=temp;
+		 current=current->next;
+		 previous->next=temp;
 	}
 
 	head=previous;
@@ -339,7 +278,7 @@ int main(int argc, char *argv[]){
 
 					while(head != NULL)
 					{
-							temp = head->Next;
+							temp = head->next;
 							free(head);
 							head = temp;
 					}
