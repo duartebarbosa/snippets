@@ -1,61 +1,65 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//Structure containing a Data part & a
+//Structure containing a data part & a
 //Link part to the next node in the List
 
-struct info {
+struct {
 	int size;
 	struct Node *head, *tail;
-}
+} info;
 
 typedef struct Node {
 	void *data;
 	struct Node *previous, *next;
 } *node_t;
 
-// Counting number of elements in the List
+struct coco {
+	int i;
+};
 
+// Counting number of elements in the List
 int length(){
 	return info.size;
-	/*
-	struct Node *current;
-	int count = 0;
-
-	current = head;
-
-	while(current != NULL){
-		current = current->next;
-		count++;
-	}
-	return(count);*/
 }
 
-void delete(node_t node){
+void delete(node_t current){
 	if(current == info.head){
 		info.head = current->next;
-		info.head->previous = NULL;
+		if(info.head != NULL)
+			info.head->previous = NULL;
 	}
 	else if(current == info.tail){
 		info.tail = current->previous;
-		info.tail->next = NULL
+		if(info.tail != NULL)
+			info.tail->next = NULL;
 	}
 	else{
+		current->previous->next = current->next;
 		current->next->previous = current->previous;
-		current->previous = current->next;
 	}
 	info.size--;
+	free(current->data);
 	free(current);
 }
 
+int deleteElementStart() {
+	delete(info.head);
+	return 0;
+}
+
+int deleteElementEnd() {
+	delete(info.tail);
+	return 0;
+}
+
+
 // Deleting a node from List depending upon the data in the node.
-
-int deleteElement(node_t node) {
-
+int deleteElement(void *data) {
 	node_t current = info.head;
 
 	for(; current != NULL; current = current->next)
-		if(current == node){
+		if(current->data == data){
 			delete(current);
 			return 0;
 		}
@@ -64,19 +68,17 @@ int deleteElement(node_t node) {
 }
 
 // Deleting a node from List depending upon the location in the list.
-
 int deleteElementAt(int location){
 	node_t current = info.head;
 
 	if(location < 0 || location > info.size)
 		printf("[list] delete : invalid element location\n");
 	else {
-		for(; location > 0, location--)
+		for(; location > 0 ; location--)
 			current = current->next;
 		delete(current);
-		return 0;
 	}
-	return 1;
+	return 0;
 }
 
 int addElementStart(void *data){
@@ -84,33 +86,41 @@ int addElementStart(void *data){
 	aux->data = data;
 	aux->previous = NULL;
 
-	if(info.head == NULL)
+	if(info.head == NULL){
 		aux->next = NULL;
-	else
+		info.tail = aux;
+	}
+	else{
 		aux->next = info.head;
+		info.head->previous = aux;
+	}
 
 	info.head = aux;
+	info.size++;
 	return 0;
 }
 
 int addElementEnd(void *data){
 	node_t tmp = malloc(sizeof(struct Node));
 	tmp->data = data;
-	tmp->after = NULL;
+	tmp->next = NULL;
 
-	if(info.tail == NULL)
-		aux->previous = NULL;
-	else
-		aux->previous = info.tail;
+	if(info.tail == NULL){
+		tmp->previous = NULL;
+		info.head = tmp;
+	}
+	else{
+		tmp->previous = info.tail;
+		info.tail->next = tmp;
+	}
 
 	info.tail = tmp;
+	info.size++;
 	return 0;
 }
 
-
-void addElementAt(void *data, int location){
-	int i;
-	struct Node *temp, *previous, *current = head;
+int addElementAt(void *data, int location){
+	node_t tmp = NULL, current = info.head;
 
 	if(location < 0 || location > info.size + 1)
 		printf("[list] insertion : invalid element location\n");
@@ -120,175 +130,74 @@ void addElementAt(void *data, int location){
 		else if(location == info.size + 1)
 			addElementEnd(data);
 		else{
-			for(i=1;i<loc;i++){
-					previous=current;
-					current=current->next;
-			}
-
-			temp=(struct Node *)malloc(sizeof(struct Node));
-			temp->Data=num;
-
-			previous->next=temp;
-			temp->next=current;
+			for(; location > 0; location--, current = current->next);
+printf("coco %p\n", current);
+			tmp = malloc(sizeof(struct Node));
+			tmp->data = data;
+			tmp->previous = current->previous;
+			tmp->previous->next = tmp;
+			tmp->next = current;
+			tmp->next->previous = tmp;
+			info.size++;
 		}
 	}
+	return 0;
 }
 
 // Displaying list contents
-
 void display(){
-	struct Node *current=head;
-
-	if(current==NULL){
-		 printf("\nList is Empty");
-	}
+	node_t current = info.head;
+	printf("head: %p, tail: %p\n", info.head, info.tail);
+	if(current == NULL)
+		 printf("List is Empty");
 	else{
-			printf("\nElements in the List: ");
-			//traverse the entire linked list
-			while(current!=NULL)
-			{
-					printf(" -> %d ",current->Data);
-					current=current->next;
-			}
-			printf("\n");
+		printf("Elements in the List: ");
+		//traverse the entire linked list
+		for(; current != NULL; current = current->next)
+			printf(" -> %p ", current);
 	}
+	printf("\n");
 }
-
-//Reversesing a Linked List
 
 void reverse(){
-	struct Node *previous, *current, *temp;
+	node_t current = info.head, previous = NULL, tmp = NULL;
 
-	current=head;
-	previous=NULL;
-
-	while(current != NULL){
-		 temp=previous;
-		 previous=current;
-
-		 current=current->next;
-		 previous->next=temp;
+	for(; current != NULL; current = current->next){
+		 tmp = previous;
+		 previous = current;
+		 previous->next = tmp;
 	}
 
-	head=previous;
+	info.head = previous;
+	for(current = info.head; current->next != NULL; current = current->next);
+	info.tail = current;
+
 }
 
+void freemem(){
+	node_t current = info.head, tmp = info.head;
+	for(; tmp != NULL; current = tmp){
+		tmp = current->next;
+		free(current->data);
+		free(current);
+	}
+}
 
-int main(int argc, char *argv[]){
- int i=0;
+struct coco* dummy(){
+	static int j = 0;
+	struct coco * dummy = malloc(sizeof(struct coco));
+	dummy->i = j++;
+	return dummy;
+}
 
- //Set head as NULL
- head=NULL;
-
- while(1) {
-		printf("\n####################################################\n");
-		printf("MAIN MENU\n");
-		printf("####################################################\n");
-		printf(" \nInsert a number \n1. At the Beginning");
-		printf(" \n2. At the End");
-		printf(" \n3. At a Particular Location in the List");
-		printf(" \n\n4. Print the Elements in the List");
-		printf(" \n5. Print number of elements in the List");
-		printf(" \n6. Reverse the linked List");
-		printf(" \n\nDelete a Node in the List");
-		printf(" \n7. Delete a node based on Value");
-		printf(" \n8. Delete a node based on Location\n");
-		printf(" \n\n9. Exit\n");
-		printf(" \nChoose Option: ");
-		scanf("%d",&i);
-
-		switch(i){
-			case 1:
-			{
-					int num;
-					printf(" \nEnter a Number to insert in the List: ");
-					scanf("%d",&num);
-					addBeg(num);
-					display();
-					break;
-			}
-
-			case 2:
-			{
-					int num;
-					printf(" \nEnter the Number to insert: ");
-					scanf("%d",&num);
-					addEnd(num);
-					display();
-					break;
-			}
-
-			case 3:
-			{
-					int num, loc;
-					printf("\nEnter the Number to insert: ");
-					scanf("%d",&num);
-					printf("\nEnter the location Number in List at which \
-					the Number is inserted: ");
-					scanf("%d",&loc);
-					addAt(num,loc);
-					display();
-					break;
-			}
-
-			case 4:
-			{
-					display();
-					break;
-			}
-
-			case 5:
-			{
-					display();
-					printf(" \nTotal number of nodes in the List: %d",length());
-					break;
-			}
-
-			case 6:
-			{
-					reverse();
-					display();
-					break;
-			}
-
-			case 7:
-			{
-					int num;
-					printf(" \nEnter the number to be deleted from List: ");
-					scanf("%d",&num);
-					delNodeData(num);
-					display();
-					break;
-			}
-
-			case 8:
-			{
-					int num;
-					printf(" \nEnter the location of the node to \
-					be deleted from List: ");
-					scanf("%d",&num);
-					delNodeLoc(num);
-					display();
-					break;
-			}
-
-			case 9:
-			{
-					struct Node *temp;
-
-					while(head != NULL)
-					{
-							temp = head->next;
-							free(head);
-							head = temp;
-					}
-					exit(0);
-			}
-
-			default:
-			{
-					printf("\nWrong Option choosen");
-			}
-		}/* end if switch */
- }/* end of while */
-}/* end of main */
+int main(){
+	addElementStart(dummy());
+	addElementStart(dummy());
+	addElementStart(dummy());
+	display();
+	printf("_________________________\n");
+	addElementAt(dummy, 1);
+	freemem();
+	display();
+	return 0;
+}
