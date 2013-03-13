@@ -130,8 +130,7 @@ int addElementAt(void *data, int location){
 		else if(location == info.size + 1)
 			addElementEnd(data);
 		else{
-			for(; location > 0; location--, current = current->next);
-printf("coco %p\n", current);
+			for(; location > 0 && current->next != NULL; location--, current = current->next);
 			tmp = malloc(sizeof(struct Node));
 			tmp->data = data;
 			tmp->previous = current->previous;
@@ -160,18 +159,17 @@ void display(){
 }
 
 void reverse(){
-	node_t current = info.head, previous = NULL, tmp = NULL;
+	node_t a = NULL, b = info.head, c = NULL;
+	
+	while(b != NULL) {
+		c = b->next;
+		if(!c)
+			info.head = b;
 
-	for(; current != NULL; current = current->next){
-		 tmp = previous;
-		 previous = current;
-		 previous->next = tmp;
+		b->next = a;
+		a = b;
+		b = c;
 	}
-
-	info.head = previous;
-	for(current = info.head; current->next != NULL; current = current->next);
-	info.tail = current;
-
 }
 
 void freemem(){
@@ -185,9 +183,9 @@ void freemem(){
 
 struct coco* dummy(){
 	static int j = 0;
-	struct coco * dummy = malloc(sizeof(struct coco));
-	dummy->i = j++;
-	return dummy;
+	struct coco * dummyStruct = malloc(sizeof(struct coco));
+	dummyStruct->i = j++;
+	return dummyStruct;
 }
 
 int main(){
@@ -195,9 +193,9 @@ int main(){
 	addElementStart(dummy());
 	addElementStart(dummy());
 	display();
+	reverse();
 	printf("_________________________\n");
-	addElementAt(dummy, 1);
-	freemem();
 	display();
+	freemem();
 	return 0;
 }
