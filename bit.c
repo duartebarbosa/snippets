@@ -13,7 +13,7 @@ char* itobs(int value){
 	char aux[33] = {0};
 
 	for(; value; value >>= 1)
-		aux[j--] = value % 2 ? '1' : '0';
+		aux[j--] = value & 0x1 ? '1' : '0';
 
 	return strcpy(calloc(32-j, 1), aux + j + 1);
 }
@@ -32,7 +32,7 @@ int consecutiveZeros(char *value){
 	}
 
 	if(tmp > counter)
-		counter = tmp;
+		return tmp;
 
 	return counter;
 }
