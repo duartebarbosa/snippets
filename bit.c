@@ -4,10 +4,10 @@
 
 #define HIGH_NIBBLE(b) (((b) >> 4) & 0x0F)
 #define LOW_NIBBLE(b) ((b) & 0x0F)
+#define SET_MOST_SIGNIFICANT_BIT(b) (b)<<((sizeof(int)*8)-1)
 
-
-//int to binary string, x86 int beware.
-//returning string must be freed!
+//int to binary string, non-x86 int beware!
+//returning string must be freed.
 char* itobs(int value){
 	int j = 31;
 	char aux[33] = {0};
@@ -16,5 +16,24 @@ char* itobs(int value){
 		aux[j--] = value % 2 ? '1' : '0';
 
 	return strcpy(calloc(32-j, 1), aux + j + 1);
+}
+
+int consecutiveZeros(char *value){
+	int index = 0, tmp = 0, counter = 0;
+	
+	for(; value[index] != '\0'; index++){
+		if(value[index] == '0')
+			tmp++;
+		else{
+			if(tmp > counter)
+				counter = tmp;
+			tmp = 0;
+		}
+	}
+
+	if(tmp > counter)
+		counter = tmp;
+
+	return counter;
 }
 
