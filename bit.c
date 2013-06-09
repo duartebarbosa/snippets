@@ -1,10 +1,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define HIGH_NIBBLE(b) (((b) >> 4) & 0x0F)
 #define LOW_NIBBLE(b) ((b) & 0x0F)
 #define SET_MOST_SIGNIFICANT_BIT(b) (b)<<((sizeof(int)*8)-1)
+
+int bstoi(char *binary){
+	int size = 0, value = 0, index = 0;
+	
+	for(; binary[size] != '\0'; size++);
+
+	for(; index != size; index++)
+		value += (binary[index] == '1') ? pow(2, index) : 0;
+
+	return value;
+
+}
 
 //int to binary string, non-x86 int beware!
 //returning string must be freed.
@@ -23,11 +36,17 @@ int kSparseIntegers(int value, int k){
 	int i = 0, tmp = 0;
 	char *aux = itobs(value);
 	
-	for(; aux[i] != '\0'; i++){
+	for(; value; value >>= 1)
+		i += value & 0x1 ? 1 : 0;
+	
+	if(i == 1)
+		return 0;
+	
+	for(i = 0; aux[i] != '\0'; i++){
 		if(aux[i] == '0')
 			tmp++;
 		else{
-			if(i == 0 || aux[i+1] == '\0')
+			if(i == 0 || (aux[i+1] == '\0' && tmp >= k))
 				continue;
 			else if(tmp >= k)
 				tmp = 0;
@@ -35,7 +54,7 @@ int kSparseIntegers(int value, int k){
 				return -1;
 		}
 	}
-	
+	free(aux);
 	return 0;
 			
 }
@@ -57,6 +76,16 @@ int consecutiveZeros(char *value){
 	if(tmp > counter)
 		return tmp;
 
+	return counter;
+}
+
+//solution for codility challenge
+int kSparseIntegersBetween(char *source, char *target, int n) {
+	int min = bstoi(source), max = bstoi(target), counter = 0;
+	
+	for(; min <= max; min++)
+		if(kSparseIntegers(min, n) == 0)
+			counter++;
 	return counter;
 }
 
