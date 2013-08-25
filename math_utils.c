@@ -119,10 +119,9 @@ void factor(unsigned long n) {
 
 unsigned long factorial(unsigned long n) {
 	unsigned long i = n - 1;
-	while(i != 1){
-		n *= i;
-		i--;
-	}
+	while(i != 1)
+		n *= i--;
+
 	return n;
 }
 
