@@ -1,4 +1,4 @@
-Snippets
+#Snippets
 
 This project consists of some snippets collected among hours of work. This is not proven to be correct or even work.
 License : GNU Library or Lesser General Public License (LGPL)
