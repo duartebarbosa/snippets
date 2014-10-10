@@ -65,7 +65,7 @@ int isprime(unsigned long n){
 	unsigned long i = 3, k = sqrt(n) + 1;
 	
 	for (; i <= k ; i += 2)
-		if(n % i == 0)
+		if(!(n % i))
 			return 0;
 
 	return 1;
