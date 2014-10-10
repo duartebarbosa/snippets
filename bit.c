@@ -6,6 +6,7 @@
 #define HIGH_NIBBLE(b) (((b) >> 4) & 0x0F)
 #define LOW_NIBBLE(b) ((b) & 0x0F)
 #define SET_MOST_SIGNIFICANT_BIT(b) (b)<<((sizeof(int)*8)-1)
+#define POWER_OF_TWO(B) ((B!=0)&&((B&(~B+1))==B))
 
 int bstoi(char *binary){
 	int size = 0, value = 0, index = 0;
@@ -35,11 +36,8 @@ char* itobs(int value){
 int kSparseIntegers(int value, int k){
 	int i = 0, tmp = 0;
 	char *aux = itobs(value);
-	
-	for(; value; value >>= 1)
-		i += value & 0x1 ? 1 : 0;
-	
-	if(i == 1)
+
+	if(POWER_OF_TWO(value))
 		return 0;
 	
 	for(i = 0; aux[i] != '\0'; i++){
